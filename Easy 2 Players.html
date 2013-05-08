@@ -1,0 +1,635 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Game</title>
+    <style>
+    body 
+    {
+        background-color: #000000;
+    }
+    </style>
+    <script src="pixi.js"></script>
+    <div style="color:#FFFFFF" id="score">
+        P1 Score : 0 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+        &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp; P2 Score : 0
+    </div>
+</head>
+<audio src="Backgrounds/Background.wav" autoplay="autoplay" loop="loop" id="Tra">
+<audio src="Explosions/Explosion.wav" preload="false" id="Exp">
+<audio src="Shots/shot.wav" preload="false" id="Sho">
+<body>
+    <script>
+    
+    var enemyTextures = [];
+    var enemies = [];
+    var shots1Right = [];
+    var shots1Left = [];
+    var shots2Right = [];
+    var shots2Left = [];
+    var lifes1 = [];
+    var lifes2 = [];
+    var explosionTextures = [];
+    var explosions = [];
+    var explosionsTime = [];
+    var enemyTextureCounter = 0;
+    var enemyCounter = 0;
+    var shots1RightCounter = 0;
+    var shots1LeftCounter = 0;
+    var shots2RightCounter = 0;
+    var shots2LeftCounter = 0;
+    var score1 = 0;
+    var score2 = 0;
+    var alive1 = 1;
+    var alive2 = 1;
+    var continuity = 1;
+    var volume = 1;
+    var life1 = 4;
+    var life2 = 4;
+
+    var interactive = true;
+    var stage = new PIXI.Stage(0x000000, interactive);
+    var renderer = PIXI.autoDetectRenderer(window.innerWidth / 2, window.innerHeight - 40);
+    document.body.style.marginLeft = window.innerWidth / 4 + "px";
+    document.body.appendChild(renderer.view);
+    requestAnimFrame(animate);
+
+    var background1 = PIXI.Sprite.fromImage("Backgrounds/Game Background.jpg");
+    var background2 = PIXI.Sprite.fromImage("Backgrounds/Game Background.jpg");
+    background1.width = window.innerWidth / 2;
+    background1.height = window.innerHeight;
+    background2.width = window.innerWidth / 2;
+    background2.height = window.innerHeight;
+    background2.position.y = -window.innerHeight;
+    stage.addChild(background1);
+    stage.addChild(background2);
+
+    var plane1 = PIXI.Sprite.fromImage("Planes/Plane3.png"); 
+    plane1.setInteractive(true);
+    plane1.position.x = (window.innerWidth / 2) + 100;
+    plane1.position.y = window.innerHeight - 100;
+    plane1.anchor.x = 0.5;
+    plane1.anchor.y = 0.5;
+    stage.addChild(plane1);
+    plane1.mousemove = function (data) 
+    {
+        if(continuity == 1)
+        {
+            this.data = data
+            plane1.position.x = this.data.getLocalPosition(this.parent).x;
+            plane1.position.y = this.data.getLocalPosition(this.parent).y;
+        }
+    }
+    plane1.mousedown = function(data) 
+    {
+        if(continuity == 1)
+        {
+            if(volume == 1)
+                document.getElementById('Sho').play();
+            shots1Right[shots1RightCounter] = PIXI.Sprite.fromImage("Shots/Shot.png");
+            shots1Left[shots1LeftCounter] = PIXI.Sprite.fromImage("Shots/Shot.png");
+            shots1Right[shots1RightCounter].position.x = plane1.position.x + 25;
+            shots1Right[shots1RightCounter].position.y = plane1.position.y;
+            shots1Left[shots1LeftCounter].position.x = plane1.position.x - 35;
+            shots1Left[shots1LeftCounter].position.y = plane1.position.y;
+            stage.addChild(shots1Right[shots1RightCounter]);
+            stage.addChild(shots1Left[shots1LeftCounter]);
+            shots1RightCounter ++;
+            shots1LeftCounter ++;
+        }
+    }
+    plane1.mouseover = function (data)
+    {
+        setInterval(function(){
+            if(continuity == 1)
+            {
+                enemies[enemyCounter] = new PIXI.Sprite(enemyTextures[enemyTextureCounter % 6]);
+                enemies[enemyCounter].position.x = Math.random() * (window.innerWidth / 2);
+                enemies[enemyCounter].position.y = -10;
+                enemies[enemyCounter].anchor.x = 0.5;
+                enemies[enemyCounter].anchor.y = 0.5;
+                stage.addChild(enemies[enemyCounter]); 
+                enemyCounter ++;
+                enemyTextureCounter ++;
+            }
+        },3000);
+    }
+
+    var textureButton0 = PIXI.Texture.fromImage("Buttons/Pause (1).png");
+    var textureButton1 = PIXI.Texture.fromImage("Buttons/Resume (1).png");
+    var button0 = new PIXI.Sprite(textureButton0);
+    button0.buttonMode = true;
+    button0.position.x = 650;
+    button0.position.y = 0;
+    button0.setInteractive(true);
+    stage.addChild(button0);
+    button0.mousedown = button0.touchstart = function(data)
+    {
+        if(continuity == 1)
+        {
+            button0.setTexture(textureButton1);
+            continuity = 0;
+            renderer.render(stage);
+        }
+        else
+        {
+            button0.setTexture(textureButton0);
+            continuity = 1; 
+            renderer.render(stage);
+        }
+    }
+
+    var textureButton2 = PIXI.Texture.fromImage("Buttons/Mute.png");
+    var textureButton3 = PIXI.Texture.fromImage("Buttons/Unmute.png");
+    var button2 = new PIXI.Sprite(textureButton2);
+    button2.buttonMode = true;
+    button2.position.x = 7;
+    button2.position.y = 0;        
+    button2.setInteractive(true);
+    stage.addChild(button2);
+    button2.mousedown = button2.touchstart = function(data)
+    {
+        if(volume == 1)
+        {
+            button2.setTexture(textureButton3);
+            volume = 0;
+            renderer.render(stage);
+            document.getElementById('Tra').pause();         
+        }
+        else
+        {
+            button2.setTexture(textureButton2);
+            volume = 1;
+            renderer.render(stage); 
+            document.getElementById('Tra').play();
+        }
+    }
+
+    var textureButton4 = PIXI.Texture.fromImage("Buttons/New Game.png");
+    var button4 = new PIXI.Sprite(textureButton4);
+    button4.buttonMode = true;
+    button4.position.x = 200;
+    button4.position.y = 350;
+    button4.setInteractive(true);
+    button4.mousedown = button4.touchstart = function(data)
+    {
+        var win = window.open("Easy 2 Players.html", '_self');
+    }
+    
+    var textureButton5 = PIXI.Texture.fromImage("Buttons/Main Menu.png");
+    var button5 = new PIXI.Sprite(textureButton5);
+    button5.buttonMode = true;
+    button5.position.x = 200;
+    button5.position.y = 430;
+    button5.setInteractive(true);
+    button5.mousedown = button4.touchstart = function(data)
+    {
+        var win = window.open("Entry.html", '_self');    
+    }
+
+    var plane2 = PIXI.Sprite.fromImage("Planes/Plane2.png");
+    plane2.setInteractive(true);
+    plane2.position.x = (window.innerWidth / 2) - 100;
+    plane2.position.y = window.innerHeight - 100;
+    plane2.anchor.x = 0.5;
+    plane2.anchor.y = 0.5;
+    stage.addChild(plane2);
+    window.onkeypress = keyPress;
+    function keyPress(e)
+    {
+        if(continuity == 1)
+        {
+            if(e.keyCode == 37)
+                if(plane2.position.x < 20)
+                    plane2.position.x -= 0;
+                else
+                    plane2.position.x -= 20;
+            else if(e.keyCode == 39)
+                if(plane2.position.x > 670)
+                    plane2.position.x += 0;
+                else
+                    plane2.position.x += 20;
+            else if(e.keyCode == 38)
+                if(plane2.position.y < 20)
+                    plane2.position.y -= 0;
+                else
+                    plane2.position.y -= 20;
+            else if(e.keyCode == 40)
+                if(plane2.position.y > 550)
+                    plane2.position.y += 0;
+                else
+                    plane2.position.y += 20;
+            else
+            {
+                if(volume == 1)
+                    document.getElementById('Sho').play();
+                shots2Right[shots2RightCounter] = PIXI.Sprite.fromImage("Shots/Shot.png");
+                shots2Left[shots2LeftCounter] = PIXI.Sprite.fromImage("Shots/Shot.png");
+                shots2Right[shots2RightCounter].position.x = plane2.position.x + 25;
+                shots2Right[shots2RightCounter].position.y = plane2.position.y;
+                shots2Left[shots2LeftCounter].position.x = plane2.position.x - 35;
+                shots2Left[shots2LeftCounter].position.y = plane2.position.y;
+                stage.addChild(shots2Right[shots2RightCounter]);
+                stage.addChild(shots2Left[shots2LeftCounter]);
+                shots2RightCounter ++;
+                shots2LeftCounter ++;
+            }
+        }
+    }
+
+    var enemyTexture1 = PIXI.Texture.fromImage("Enemies/Enemy.png");
+    enemyTextures.push(enemyTexture1);
+    var enemyTexture2 = PIXI.Texture.fromImage("Enemies/Enemy1.png");
+    enemyTextures.push(enemyTexture2);
+    var enemyTexture3 = PIXI.Texture.fromImage("Enemies/Enemy2.png");
+    enemyTextures.push(enemyTexture3);
+    var enemyTexture4 = PIXI.Texture.fromImage("Enemies/Enemy3.png");
+    enemyTextures.push(enemyTexture4);
+    var enemyTexture5 = PIXI.Texture.fromImage("Enemies/Enemy4.png");
+    enemyTextures.push(enemyTexture5);
+    var enemyTexture6 = PIXI.Texture.fromImage("Enemies/Enemy5.png");
+    enemyTextures.push(enemyTexture6);
+
+    var assetsToLoader = ["Explosions/SpriteSheet.json"];
+    loader = new PIXI.AssetLoader(assetsToLoader);
+    loader.onComplete = onAssetsLoaded;
+    loader.load();
+    function onAssetsLoaded()
+    { 
+        for(var i = 0; i < 26; i++) 
+        {
+            var texture = PIXI.Texture.fromFrame("Explosion_Sequence_A " + (i + 1) + ".png");
+            explosionTextures.push(texture);
+        }
+    }
+
+    for(var i = 0; i < life1; i++)
+    {
+        lifes1[i] = PIXI.Sprite.fromImage("Lifes/Life.png");
+        lifes1[i].position.x = 25 * i;
+        lifes1[i].position.y = 550;
+        stage.addChild(lifes1[i]);
+    }
+
+    for(var i = 0; i < life2; i++)
+    {
+        lifes2[i] = PIXI.Sprite.fromImage("Lifes/Life.png");
+        lifes2[i].position.x = 25 * i + 580;
+        lifes2[i].position.y = 550;
+        stage.addChild(lifes2[i]);
+    }
+
+    function animate()
+	{
+        if(alive1 == 1 || alive2 == 1)
+        {
+            requestAnimFrame(animate);
+            if(continuity == 1)
+            {
+                for(var i = 0; i < enemyCounter; i++)
+                {
+                    if(enemies[i].position.y > 600)
+                    {
+                        stage.removeChild(enemies[i]);
+                        enemies.splice(i,1);
+                        enemyCounter --;
+                    }
+                }
+                for(var i = 0; i < explosions.length; i++)
+                {
+                    explosionsTime[i] ++;
+                    if(explosionsTime > 3)
+                    {
+                        stage.removeChild(explosions[i]);
+                        explosions.splice(i,1);
+                        explosionsTime.splice(i,1);
+                    }
+                }
+
+                for(var i = 0; i < enemyCounter; i++)
+                {
+                    enemies[i].position.y += 5;
+                    if(alive1 == 1)
+                    {
+                        if((enemies[i].position.x + 60) >= (plane1.position.x) && (enemies[i].position.x - 60) <= (plane1.position.x) &&
+                            (enemies[i].position.y + 80) >= (plane1.position.y) && (enemies[i].position.y - 80) <= (plane1.position.y))
+                        {
+                            if(life1 > 1)
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[i].position.x;
+                                explosion.position.y = enemies[i].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[i]);
+                                enemies.splice(i,1);
+                                life1 --;
+                                stage.removeChild(lifes1[life1]);
+                                lifes1.splice(life1,1);
+                                enemyCounter --;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                            else
+                            {
+                                stage.removeChild(plane1);
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[i].position.x;
+                                explosion.position.y = enemies[i].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[i]);
+                                enemies.splice(i,1);
+                                life1 --;
+                                stage.removeChild(lifes1[life1]);
+                                lifes1.splice(life1,1);
+                                enemyCounter --;
+                                alive1 = 0;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        }
+                    }
+                }
+                for(var i = 0; i < enemyCounter; i++) 
+                {
+                    if(alive2 == 1)
+                    {
+                        if((enemies[i].position.x + 50) >= (plane2.position.x) && (enemies[i].position.x - 50) <= (plane2.position.x) &&
+                            (enemies[i].position.y + 70) >= (plane2.position.y) && (enemies[i].position.y - 70) <= (plane2.position.y))
+                        {
+                            if(life2 > 1)
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[i].position.x;
+                                explosion.position.y = enemies[i].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[i]);
+                                enemies.splice(i,1);
+                                life2 --;
+                                stage.removeChild(lifes2[life2]);
+                                lifes2.splice(life2,1);
+                                enemyCounter --;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                            else
+                            {
+                                stage.removeChild(plane2);
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[i].position.x;
+                                explosion.position.y = enemies[i].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[i]);
+                                enemies.splice(i,1);
+                                life2 --;
+                                stage.removeChild(lifes2[life2]);
+                                lifes2.splice(life2,1);
+                                enemyCounter --;
+                                alive2 = 0;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        }
+                    }
+                }
+                if(alive2 == 1)
+                {
+                    for(var i = 0; i < shots2RightCounter; i++) 
+                    {
+                        if(shots2Right[i].position.y < 0)
+                        {
+                            stage.removeChild(shots2Right[i]);
+                            shots2Right.splice(i,1);
+                            shots2RightCounter --;
+                        }
+                    }
+                    for(var i = 0; i < shots2RightCounter; i++) 
+                    {
+                        shots2Right[i].position.y -= 20; 
+                        for(var j = 0 ; j < enemyCounter; j++)
+                        {
+                            if((enemies[j].position.x + 30) >= (shots2Right[i].position.x) && (enemies[j].position.x - 30) <= (shots2Right[i].position.x) && 
+                                (enemies[j].position.y + 45) >= (shots2Right[i].position.y) && (enemies[j].position.y - 45) <= (shots2Right[i].position.y))
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[j].position.x;
+                                explosion.position.y = enemies[j].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[j]);
+                                enemies.splice(j,1);
+                                enemyCounter --;
+                                score2 ++;
+                                stage.removeChild(shots2Right[i]);
+                                shots2Right.splice(i,1);
+                                shots2RightCounter --;
+                                document.getElementById('score').innerHTML = 'P1 Score : ' + score1 + "&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" + 'P2 Score : ' + score2;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        } 
+                    }
+                }
+                if(alive2 == 1)
+                {
+                    for(var i = 0; i < shots2LeftCounter; i++) 
+                    {
+                        if(shots2Left[i].position.y < 0)
+                        {
+                            stage.removeChild(shots2Left[i]);
+                            shots2Left.splice(i,1);
+                            shots2LeftCounter --;
+                        }
+                    }
+                    for(var i = 0; i < shots2LeftCounter; i++) 
+                    {
+                        shots2Left[i].position.y -= 20; 
+                        for(var j = 0 ; j < enemyCounter; j++)
+                        {
+                            if((enemies[j].position.x + 30) >= (shots2Left[i].position.x) && (enemies[j].position.x - 30) <= (shots2Left[i].position.x) && 
+                                (enemies[j].position.y + 45) >= (shots2Left[i].position.y) && (enemies[j].position.y - 45) <= (shots2Left[i].position.y))
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[j].position.x;
+                                explosion.position.y = enemies[j].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[j]);
+                                enemies.splice(j,1);
+                                enemyCounter --;
+                                score2 ++;
+                                stage.removeChild(shots2Left[i]);
+                                shots2Left.splice(i,1);
+                                shots2LeftCounter --;
+                                document.getElementById('score').innerHTML = 'P1 Score : ' + score1 + "&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" + 'P2 Score : ' + score2;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        } 
+                    }
+                }
+                if(alive1 == 1)
+                {
+                    for(var i = 0; i < shots1RightCounter; i++) 
+                    {
+                        if(shots1Right[i].position.y < 0)
+                        {
+                            stage.removeChild(shots1Right[i]);
+                            shots1Right.splice(i,1);
+                            shots1RightCounter --;
+                        }
+                    }
+                    for(var i = 0; i < shots1RightCounter; i++) 
+                    {
+                        shots1Right[i].position.y -= 20;
+                        for(var j = 0 ; j < enemyCounter; j++)
+                        {
+                            if((enemies[j].position.x + 30) >= (shots1Right[i].position.x) && (enemies[j].position.x - 30) <= (shots1Right[i].position.x) && 
+                                (enemies[j].position.y + 45) >= (shots1Right[i].position.y) && (enemies[j].position.y - 45) <= (shots1Right[i].position.y))
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[j].position.x;
+                                explosion.position.y = enemies[j].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[j]);
+                                enemies.splice(j,1);
+                                enemyCounter --;
+                                stage.removeChild(shots1Right[i]);
+                                shots1Right.splice(i,1);
+                                shots1RightCounter --;
+                                score1 ++;
+                                document.getElementById('score').innerHTML = 'P1 Score : ' + score1 + "&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" + 'P2 Score : ' + score2;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        }  
+                    }
+                }
+                if(alive1 == 1)
+                {
+                    for(var i = 0; i < shots1LeftCounter; i++) 
+                    {
+                        if(shots1Left[i].position.y < 0)
+                        {
+                            stage.removeChild(shots1Left[i]);
+                            shots1Left.splice(i,1);
+                            shots1LeftCounter --;
+                        }
+                    }
+                    for(var i = 0; i < shots1LeftCounter; i++) 
+                    {
+                        shots1Left[i].position.y -= 20;
+                        for(var j = 0 ; j < enemyCounter; j++)
+                        {
+                            if((enemies[j].position.x + 30) >= (shots1Left[i].position.x) && (enemies[j].position.x - 30) <= (shots1Left[i].position.x) && 
+                                (enemies[j].position.y + 45) >= (shots1Left[i].position.y) && (enemies[j].position.y - 45) <= (shots1Left[i].position.y))
+                            {
+                                var explosion = new PIXI.MovieClip(explosionTextures);
+                                explosion.anchor.x = 0.5;
+                                explosion.anchor.y = 0.5;
+                                explosion.position.x = enemies[j].position.x;
+                                explosion.position.y = enemies[j].position.y;
+                                explosion.gotoAndPlay(10);
+                                explosion.animationspeed = 0.2;
+                                explosions.push(explosion);
+                                explosionsTime.push(0);
+                                stage.addChild(explosions[explosions.length - 1]);
+                                stage.removeChild(enemies[j]);
+                                enemies.splice(j,1);
+                                enemyCounter --;
+                                stage.removeChild(shots1Left[i]);
+                                shots1Left.splice(i,1);
+                                shots1LeftCounter --;
+                                score1 ++;
+                                document.getElementById('score').innerHTML = 'P1 Score : ' + score1 + "&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;" + 'P2 Score : ' + score2;
+                                if(volume == 1)
+                                    document.getElementById('Exp').play();
+                            }
+                        }  
+                    }
+                }
+        	    background1.position.y += 1;
+                background2.position.y += 1;
+                if(background1.position.y == 0)
+                	background2.position.y = -window.innerHeight;
+                if(background2.position.y == 0)
+                	background1.position.y = -window.innerHeight;      
+            } 
+        } 
+        else if(score1 > score2)
+        {
+            var end1 = PIXI.Sprite.fromImage("Backgrounds/End1.png");
+            end1.width = window.innerWidth / 2;
+            end1.height = window.innerHeight;
+            stage.addChild(end1);
+            stage.addChild(button4);
+            stage.addChild(button5);
+            requestAnimFrame(animate);      
+           renderer.render(stage); 
+        } 
+        else if(score1 < score2)
+        {
+            var end2 = PIXI.Sprite.fromImage("Backgrounds/End2.png");
+            end2.width = window.innerWidth / 2;
+            end2.height = window.innerHeight;
+            stage.addChild(end2);
+            stage.addChild(button4);
+            stage.addChild(button5);
+            requestAnimFrame(animate);      
+            renderer.render(stage); 
+        }
+        else if(score1 == score2)
+        {
+            var end3 = PIXI.Sprite.fromImage("Backgrounds/End3.png");
+            end3.width = window.innerWidth / 2;
+            end3.height = window.innerHeight;
+            stage.addChild(end3);
+            stage.addChild(button4);
+            stage.addChild(button5);
+            requestAnimFrame(animate);      
+            renderer.render(stage); 
+        }
+        renderer.render(stage); 		
+	}
+
+    </script>
+</body>
+</html>

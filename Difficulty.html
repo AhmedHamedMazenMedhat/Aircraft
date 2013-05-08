@@ -1,0 +1,340 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Entry</title>
+	<script src="pixi.js"></script>
+</head>
+<body>
+	<script>
+
+	var interactive = true;
+	var stage = new PIXI.Stage(0x000000, interactive);
+	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+	document.body.appendChild(renderer.view);
+	renderer.view.style.position = "absolute";
+	renderer.view.style.top = "0px";
+	renderer.view.style.left = "0px";
+	requestAnimFrame(animate);
+	var background = PIXI.Sprite.fromImage("Backgrounds/Entry Background.jpg");
+	background.width  = window.innerWidth;
+    background.height = window.innerHeight;
+	stage.addChild(background);
+
+    var textureButton0 = PIXI.Texture.fromImage("Buttons/Easy (1).png");
+	var textureButtonDown0 = PIXI.Texture.fromImage("Buttons/Easy (2).png");
+	var textureButtonOver0 = PIXI.Texture.fromImage("Buttons/Easy (3).png");
+	var button0 = new PIXI.Sprite(textureButton0);
+	button0.buttonMode = true;
+	button0.position.x = 50;
+	button0.position.y = 450 + (55 * 0);		
+	button0.setInteractive(true);
+	button0.mousedown = button0.touchstart = function(data)
+    {
+		this.isdown = true;
+		this.setTexture(textureButtonDown0);
+		this.alpha = 1;
+	}
+	button0.mouseup = button0.touchend = function(data)
+	{
+		this.isdown = false;
+		if(this.isOver)
+		{
+			this.setTexture(textureButtonOver0);
+		}
+		else
+		{
+			this.setTexture(textureButton0);
+		}
+	}
+	button0.mouseover = function(data)
+	{
+		this.isOver = true;
+		if(this.isdown)return
+			this.setTexture(textureButtonOver0);
+	}
+	button0.mouseout = function(data)
+	{
+		this.isOver = false;
+		if(this.isdown)return
+			this.setTexture(textureButton0);
+	}
+	button0.click = function(data)
+	{
+		console.log("CLICK!");
+	}
+	button0.tap = function(data)
+	{
+		console.log("TAP!!");
+	}
+	stage.addChild(button0);
+	button0.click = button0.tap = function()
+	{
+		stage.removeChild(button0);
+		stage.removeChild(button1);
+		var textureButton2 = PIXI.Texture.fromImage("Buttons/1 Player (1).png");
+		var textureButtonDown2 = PIXI.Texture.fromImage("Buttons/1 Player (2).png");
+		var textureButtonOver2 = PIXI.Texture.fromImage("Buttons/1 Player (3).png");
+		var button2 = new PIXI.Sprite(textureButton2);
+		button2.buttonMode = true;
+		button2.position.x = 50;
+		button2.position.y = 450 + (55 * 0);		
+		button2.setInteractive(true);
+		button2.mousedown = button2.touchstart = function(data)
+	    {
+			this.isdown = true;
+			this.setTexture(textureButtonDown2);
+			this.alpha = 1;
+		}
+		button2.mouseup = button2.touchend = function(data)
+		{
+			this.isdown = false;
+			if(this.isOver)
+			{
+				this.setTexture(textureButtonOver2);
+			}
+			else
+			{
+				this.setTexture(textureButton2);
+			}
+		}
+		button2.mouseover = function(data)
+		{
+			this.isOver = true;
+			if(this.isdown)return
+				this.setTexture(textureButtonOver2);
+		}
+		button2.mouseout = function(data)
+		{
+			this.isOver = false;
+			if(this.isdown)return
+				this.setTexture(textureButton2);
+		}
+		button2.click = function(data)
+		{
+			console.log("CLICK!");
+		}
+		button2.tap = function(data)
+		{
+			console.log("TAP!!");
+		}
+		stage.addChild(button2);
+		button2.click = button2.tap = function()
+		{
+			var win = window.open("Easy 1 Player.html", '_self');
+	    }
+		var textureButton3 = PIXI.Texture.fromImage("Buttons/2 Player (1).png");
+		var textureButtonDown3 = PIXI.Texture.fromImage("Buttons/2 Player (2).png");
+		var textureButtonOver3 = PIXI.Texture.fromImage("Buttons/2 Player (3).png");
+		var button3 = new PIXI.Sprite(textureButton3);
+		button3.buttonMode = true;
+		button3.position.x = 50;
+		button3.position.y = 450 + (55 * 1);		
+		button3.setInteractive(true);
+		button3.mousedown = button3.touchstart = function(data)
+	    {
+			this.isdown = true;
+			this.setTexture(textureButtonDown3);
+			this.alpha = 1;
+		}
+		button3.mouseup = button3.touchend = function(data)
+		{
+			this.isdown = false;
+			if(this.isOver)
+			{
+				this.setTexture(textureButtonOver3);
+			}
+			else
+			{
+				this.setTexture(textureButton3);
+			}
+		}
+		button3.mouseover = function(data)
+		{
+			this.isOver = true;
+			if(this.isdown)return
+				this.setTexture(textureButtonOver3);
+		}
+		button3.mouseout = function(data)
+		{
+			this.isOver = false;
+			if(this.isdown)return
+				this.setTexture(textureButton3);
+		}
+		button3.click = function(data)
+		{
+			console.log("CLICK!");
+		}
+		button3.tap = function(data)
+		{
+			console.log("TAP!!");
+		}
+		stage.addChild(button3);
+		button3.click = button3.tap = function()
+		{
+			var win = window.open("Easy 2 Players.html", '_self');
+	    }
+    }
+
+	var textureButton1 = PIXI.Texture.fromImage("Buttons/Hard (1).png");
+	var textureButtonDown1 = PIXI.Texture.fromImage("Buttons/Hard (2).png");
+	var textureButtonOver1 = PIXI.Texture.fromImage("Buttons/Hard (3).png");
+	var button1 = new PIXI.Sprite(textureButton1);
+	button1.buttonMode = true;
+	button1.position.x = 50;
+	button1.position.y = 450 + (55 * 1);		
+	button1.setInteractive(true);
+	button1.mousedown = button1.touchstart = function(data)
+    {
+		this.isdown = true;
+		this.setTexture(textureButtonDown1);
+		this.alpha = 1;
+	}
+	button1.mouseup = button1.touchend = function(data)
+	{
+		this.isdown = false;
+		if(this.isOver)
+		{
+			this.setTexture(textureButtonOver1);
+		}
+		else
+		{
+			this.setTexture(textureButton1);
+		}
+	}
+	button1.mouseover = function(data)
+	{
+		this.isOver = true;
+		if(this.isdown)return
+			this.setTexture(textureButtonOver1);
+	}
+	button1.mouseout = function(data)
+	{
+		this.isOver = false;
+		if(this.isdown)return
+			this.setTexture(textureButton1);
+	}
+	button1.click = function(data)
+	{
+		console.log("CLICK!");
+	}
+	button1.tap = function(data)
+	{
+		console.log("TAP!!");
+	}
+	stage.addChild(button1);
+	button1.click = button1.tap = function()
+	{
+		stage.removeChild(button0);
+		stage.removeChild(button1);
+		var textureButton4 = PIXI.Texture.fromImage("Buttons/1 Player (1).png");
+		var textureButtonDown4 = PIXI.Texture.fromImage("Buttons/1 Player (2).png");
+		var textureButtonOver4 = PIXI.Texture.fromImage("Buttons/1 Player (3).png");
+		var button4 = new PIXI.Sprite(textureButton4);
+		button4.buttonMode = true;
+		button4.position.x = 50;
+		button4.position.y = 450 + (55 * 0);		
+		button4.setInteractive(true);
+		button4.mousedown = button4.touchstart = function(data)
+	    {
+			this.isdown = true;
+			this.setTexture(textureButtonDown4);
+			this.alpha = 1;
+		}
+		button4.mouseup = button4.touchend = function(data)
+		{
+			this.isdown = false;
+			if(this.isOver)
+			{
+				this.setTexture(textureButtonOver4);
+			}
+			else
+			{
+				this.setTexture(textureButton4);
+			}
+		}
+		button4.mouseover = function(data)
+		{
+			this.isOver = true;
+			if(this.isdown)return
+				this.setTexture(textureButtonOver4);
+		}
+		button4.mouseout = function(data)
+		{
+			this.isOver = false;
+			if(this.isdown)return
+				this.setTexture(textureButton4);
+		}
+		button4.click = function(data)
+		{
+			console.log("CLICK!");
+		}
+		button4.tap = function(data)
+		{
+			console.log("TAP!!");
+		}
+		stage.addChild(button4);
+		button4.click = button4.tap = function()
+		{
+			var win = window.open("Hard 1 Player.html", '_self');
+	    }
+		var textureButton5 = PIXI.Texture.fromImage("Buttons/2 Player (1).png");
+		var textureButtonDown5 = PIXI.Texture.fromImage("Buttons/2 Player (2).png");
+		var textureButtonOver5 = PIXI.Texture.fromImage("Buttons/2 Player (3).png");
+		var button5 = new PIXI.Sprite(textureButton5);
+		button5.buttonMode = true;
+		button5.position.x = 50;
+		button5.position.y = 450 + (55 * 1);		
+		button5.setInteractive(true);
+		button5.mousedown = button5.touchstart = function(data)
+	    {
+			this.isdown = true;
+			this.setTexture(textureButtonDown5);
+			this.alpha = 1;
+		}
+		button5.mouseup = button5.touchend = function(data)
+		{
+			this.isdown = false;
+			if(this.isOver)
+			{
+				this.setTexture(textureButtonOver5);
+			}
+			else
+			{
+				this.setTexture(textureButton5);
+			}
+		}
+		button5.mouseover = function(data)
+		{
+			this.isOver = true;
+			if(this.isdown)return
+				this.setTexture(textureButtonOver5);
+		}
+		button5.mouseout = function(data)
+		{
+			this.isOver = false;
+			if(this.isdown)return
+				this.setTexture(textureButton5);
+		}
+		button5.click = function(data)
+		{
+			console.log("CLICK!");
+		}
+		button5.tap = function(data)
+		{
+			console.log("TAP!!");
+		}
+		stage.addChild(button5);
+		button5.click = button5.tap = function()
+		{
+			var win = window.open("Hard 2 Players.html", '_self');
+	    }
+	}
+
+	function animate()
+	{
+	    requestAnimFrame(animate);   	
+	    renderer.render(stage);	
+	}       		
+    </script>
+</body>
+</html>

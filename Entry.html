@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<title>Entry</title>
+	<script src="pixi.js"></script>
+</head>
+<body>
+	<script>
+
+	var interactive = true;
+	var stage = new PIXI.Stage(0x000000, interactive);
+	var renderer = PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+	document.body.appendChild(renderer.view);
+	renderer.view.style.position = "absolute";
+	renderer.view.style.top = "0px";
+	renderer.view.style.left = "0px";
+	requestAnimFrame(animate);
+
+	var background = PIXI.Sprite.fromImage("Backgrounds/Entry Background.jpg");
+	background.width  = window.innerWidth;
+    background.height = window.innerHeight;
+	stage.addChild(background);
+
+    var textureButton0 = PIXI.Texture.fromImage("Buttons/Play (1).png");
+	var textureButtonDown0 = PIXI.Texture.fromImage("Buttons/Play (2).png");
+	var textureButtonOver0 = PIXI.Texture.fromImage("Buttons/Play (3).png");
+	var button0 = new PIXI.Sprite(textureButton0);
+	button0.buttonMode = true;
+	button0.position.x = 50;
+	button0.position.y = 450 + (55 * 0);		
+	button0.setInteractive(true);
+	button0.mousedown = button0.touchstart = function(data)
+    {
+		this.isdown = true;
+		this.setTexture(textureButtonDown0);
+		this.alpha = 1;
+	}
+	button0.mouseup = button0.touchend = function(data)
+	{
+		this.isdown = false;
+		if(this.isOver)
+		{
+			this.setTexture(textureButtonOver0);
+		}
+		else
+		{
+			this.setTexture(textureButton0);
+		}
+	}
+	button0.mouseover = function(data)
+	{
+		this.isOver = true;
+		if(this.isdown)return
+			this.setTexture(textureButtonOver0);
+	}
+	button0.mouseout = function(data)
+	{
+		this.isOver = false;
+		if(this.isdown)return
+			this.setTexture(textureButton0);
+	}
+	button0.click = function(data)
+	{
+		console.log("CLICK!");
+	}
+	button0.tap = function(data)
+	{
+		console.log("TAP!!");
+	}
+	stage.addChild(button0);
+	button0.click = button0.tap = function()
+	{
+		var win = window.open("Difficulty.html", '_self');
+    }
+
+	var textureButton1 = PIXI.Texture.fromImage("Buttons/Exit (1).png");
+	var textureButtonDown1 = PIXI.Texture.fromImage("Buttons/Exit (2).png");
+	var textureButtonOver1 = PIXI.Texture.fromImage("Buttons/Exit (3).png");
+	var button1 = new PIXI.Sprite(textureButton1);
+	button1.buttonMode = true;
+	button1.position.x = 50;
+	button1.position.y = 450 + (55 * 1);		
+	button1.setInteractive(true);
+	button1.mousedown = button1.touchstart = function(data)
+    {
+		this.isdown = true;
+		this.setTexture(textureButtonDown1);
+		this.alpha = 1;
+	}
+	button1.mouseup = button1.touchend = function(data)
+	{
+		this.isdown = false;
+		if(this.isOver)
+		{
+			this.setTexture(textureButtonOver1);
+		}
+		else
+		{
+			this.setTexture(textureButton1);
+		}
+	}
+	button1.mouseover = function(data)
+	{
+		this.isOver = true;
+		if(this.isdown)return
+			this.setTexture(textureButtonOver1);
+	}
+	button1.mouseout = function(data)
+	{
+		this.isOver = false;
+		if(this.isdown)return
+			this.setTexture(textureButton1);
+	}
+	button1.click = function(data)
+	{
+		console.log("CLICK!");
+	}
+	button1.tap = function(data)
+	{
+		console.log("TAP!!");
+	}
+	stage.addChild(button1);
+	button1.click = button1.tap = function()
+	{
+		window.close();
+	}
+
+	function animate()
+	{
+	    requestAnimFrame(animate);   	
+	    renderer.render(stage);	
+	}
+        		
+    </script>
+</body>
+</html>
